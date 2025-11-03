@@ -53,3 +53,31 @@ Charlie: 0
   ## replica set and specify the read preference as secondary preferred
   client = pymongo.MongoClient('mongodb://<user-name>:<password>@mycluster.node.us-east-1.docdb.amazonaws.com:27017/?replicaSet=rs0')
   ```
+
+## 補足
+
+### レプリカセット名
+
+レプリカセットの名前は `rs0`  
+以下のファイルでそれぞれ登場
+
+- mongo/init.js
+  ```javascript
+  rs.initiate({
+    _id: "rs0",
+  ```
+- docker-compose.yml
+  ```yaml
+  command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
+  ```
+- app/mongo/transaction.py
+  ```python
+  client = MongoClient("mongodb://mongodb-primary:27017/?replicaSet=rs0")
+  ```
+
+### 認証情報
+
+ユーザー名・パスワードを使用して mongo にアクセスする構成は本プロジェクトではしていない。  
+認証設定が必要な場合は、以下サイトを参考にキーなどの設定も行う。
+
+- [MongoDB 6.0 のレプリケーション（レプリカセット）を Docker コンテナ上で構築する方法](https://n-laboratory.jp/articles/mongodb-replicaset-docker)
