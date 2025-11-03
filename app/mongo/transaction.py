@@ -1,9 +1,7 @@
 from pymongo import MongoClient, errors
 
 # MongoDBに接続（レプリカセットが必要）
-client = MongoClient(
-    "mongodb://admin:secretpassword@mongodb-primary:27017/?replicaSet=rs0"
-)
+client = MongoClient("mongodb://mongodb-primary:27017/?replicaSet=rs0")
 db = client["test_db"]
 accounts = db["accounts"]
 logs = db["logs"]

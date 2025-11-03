@@ -1,7 +1,7 @@
 from pymongo import MongoClient
 
 # MONGO_URL = "mongodb://mongodb-primary:27017,mongodb-secondary:27017/?replicaSet=rs0"
-MONGO_URL = "mongodb://admin:secretpassword@mongodb-primary:27017/"
+MONGO_URL = "mongodb://mongodb-primary:27017/"
 
 # MongoDBに接続
 client = MongoClient(MONGO_URL)
