@@ -4,7 +4,19 @@
 
 - mongodb をレプリカ構成で動かす.
 - pymongo で操作してトランザクションを確認する.
-- ※ユーザ・パスワードの認証設定なし
+- ユーザ・パスワードの認証設定あり
+
+## key 作成
+
+```shell
+openssl rand -base64 756 > mongo/etc/mongod-keyfile
+chmod 600 mongo/etc/mongod-keyfile
+sudo chown 999 mongo/etc/mongod-keyfile
+```
+
+参考
+
+- [MongoDB 6.0 のレプリケーション（レプリカセット）を Docker コンテナ上で構築する方法](https://n-laboratory.jp/articles/mongodb-replicaset-docker)
 
 ## docker compose 起動
 
@@ -19,7 +31,7 @@ docker compose up --build
 ホスト OS
 
 ```shell
-docker exec -i fastapi_mongos-mongodb-primary-1 mongosh /init.js
+docker exec -i fastapi_mongos-mongodb-primary-1 mongosh admin -u root -p password /docker-entrypoint-initdb.d/init.js
 ```
 
 参考
@@ -68,16 +80,18 @@ Charlie: 0
   ```
 - docker-compose.yml
   ```yaml
-  command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
+  command:
+    [
+      "mongod",
+      "--replSet",
+      "rs0",
+      "--bind_ip_all",
+      "--auth",
+      "--keyFile",
+      "/etc/mongod-keyfile",
+    ]
   ```
 - app/mongo/transaction.py
   ```python
-  client = MongoClient("mongodb://mongodb-primary:27017/?replicaSet=rs0")
+  client = MongoClient("mongodb://root:password@mongodb-primary:27017/?replicaSet=rs0")
   ```
-
-### 認証情報
-
-ユーザー名・パスワードを使用して mongo にアクセスする構成は本プロジェクトではしていない。  
-認証設定が必要な場合は、以下サイトを参考にキーなどの設定も行う。
-
-- [MongoDB 6.0 のレプリケーション（レプリカセット）を Docker コンテナ上で構築する方法](https://n-laboratory.jp/articles/mongodb-replicaset-docker)
