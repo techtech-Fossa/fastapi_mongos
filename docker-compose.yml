@@ -17,26 +17,47 @@ services:
 
   mongodb-primary:
     image: mongo:latest
-    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
+    command:
+      [
+        "mongod",
+        "--replSet",
+        "rs0",
+        "--bind_ip_all",
+        "--auth",
+        "--keyFile",
+        "/etc/mongod-keyfile",
+      ]
     ports:
       - "27017:27017"
     networks:
       - mongos-network
     volumes:
       - ./mongo/data/primary:/data/db
-      - ./mongo/init.js:/init.js
-    depends_on:
-      - mongodb-secondary
+      - ./mongo/etc/init/:/docker-entrypoint-initdb.d/:ro
+      - ./mongo/etc/mongod-keyfile:/etc/mongod-keyfile:ro
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
 
   mongodb-secondary:
     image: mongo:latest
-    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
+    command:
+      [
+        "mongod",
+        "--replSet",
+        "rs0",
+        "--bind_ip_all",
+        "--auth",
+        "--keyFile",
+        "/etc/mongod-keyfile",
+      ]
     ports:
       - "27018:27017"
     networks:
       - mongos-network
     volumes:
       - ./mongo/data/secondary:/data/db
+      - ./mongo/etc/mongod-keyfile:/etc/mongod-keyfile:ro
 
 networks:
   mongos-network:
