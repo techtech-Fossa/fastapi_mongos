@@ -9,3 +9,6 @@ app/__pycache__/** */
 # mongodb data
 mongo/data/
 mongo/data/**
+
+# key
+mongo/etc/mongod-keyfile
