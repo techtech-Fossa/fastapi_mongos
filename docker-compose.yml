@@ -1,0 +1,42 @@
+version: "3.9"
+
+services:
+  fastapi:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./app:/app
+    depends_on:
+      - mongodb-primary
+      - mongodb-secondary
+    networks:
+      - mongos-network
+
+  mongodb-primary:
+    image: mongo:latest
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
+    ports:
+      - "27017:27017"
+    networks:
+      - mongos-network
+    volumes:
+      - ./mongo/data/primary:/data/db
+      - ./mongo/init.js:/init.js
+    depends_on:
+      - mongodb-secondary
+
+  mongodb-secondary:
+    image: mongo:latest
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
+    ports:
+      - "27018:27017"
+    networks:
+      - mongos-network
+    volumes:
+      - ./mongo/data/secondary:/data/db
+
+networks:
+  mongos-network:

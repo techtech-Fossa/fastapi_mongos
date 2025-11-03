@@ -1,0 +1,11 @@
+# venv
+.venv/
+.venv/**
+
+# python cache
+app/__pycache__/
+app/__pycache__/** */
+
+# mongodb data
+mongo/data/
+mongo/data/**
